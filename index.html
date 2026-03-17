@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SUMMER BIG 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --dark: #181818;
+      --white: #f0ece3;
+      --yellow: #f5c518;
+      --red: #c0392b;
+      --gray: #888;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TOP SECTION ── */
+    .top-section {
+      background-color: var(--white);
+      padding: 48px 40px 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 32px;
+      position: relative;
+    }
+
+    .album-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Album photo */
+    .album-photo {
+      width: 290px;
+      height: 220px;
+      background: var(--black);
+      border: 3px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .album-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .album-photo .placeholder-text {
+      color: var(--gray);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    /* Title */
+    .album-title {
+      margin-top: 14px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 6vw, 62px);
+      letter-spacing: 4px;
+      color: var(--black);
+      text-align: center;
+      line-height: 1;
+    }
+
+    /* GIF zone — top right */
+    .gif-zone {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+    }
+
+    .gif-wrapper {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .gif-box {
+      width: 100px;
+      height: 100px;
+      background: var(--black);
+      border: 3px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+
+    .gif-box:hover { transform: scale(1.04); }
+
+    .gif-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gif-box .placeholder-gif {
+      color: var(--gray);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+
+    /* Bocadillo */
+    .bocadillo {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 12px);
+      right: 0;
+      background: var(--yellow);
+      color: var(--black);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.4;
+      padding: 10px 14px;
+      border-radius: 10px 10px 0 10px;
+      width: 210px;
+      text-align: left;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+      z-index: 10;
+      animation: popIn 0.18s cubic-bezier(.36,1.56,.64,1) both;
+    }
+
+    .bocadillo.visible { display: block; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7) translateY(6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ── BOTTOM SECTION ── */
+    .bottom-section {
+      background-color: var(--dark);
+      padding: 60px 40px 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .countdown-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 8vw, 80px);
+      letter-spacing: 8px;
+      color: var(--white);
+      text-align: center;
+    }
+
+    /* Countdown digits */
+    .countdown-digits {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cd-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 10vw, 110px);
+      color: var(--white);
+      line-height: 1;
+      min-width: 2ch;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .cd-sep {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 10vw, 110px);
+      color: var(--gray);
+      line-height: 1;
+      align-self: flex-start;
+      margin-top: -4px;
+    }
+
+    .cd-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+
+    /* Year line */
+    .year-line {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      letter-spacing: 6px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    /* Available message */
+    .available-msg {
+      display: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 6vw, 64px);
+      letter-spacing: 6px;
+      color: #1DB954; /* Spotify green */
+      text-align: center;
+      animation: glow 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #1DB954; }
+      to   { text-shadow: 0 0 40px #1DB954, 0 0 60px #1DB954; }
+    }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .gif-zone { position: static; margin-top: 20px; }
+      .top-section { flex-direction: column; align-items: center; padding: 36px 20px 24px; }
+      .album-photo { width: 260px; height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP SECTION -->
+  <div class="top-section">
+    <div class="album-block">
+      <!-- FOTO DEL ÁLBUM — reemplaza "portada.jpg" por tu imagen -->
+      <div class="album-photo" id="albumPhoto">
+        <img src="portada.jpeg" alt="Portada álbum">
+        <!-- <img src="portada.jpg" alt="Portada álbum"> -->
+      </div>
+      <div class="album-title">SUMMER BIG 2026</div>
+    </div>
+
+    <!-- GIF + BOCADILLO -->
+    <div class="gif-zone">
+      <div class="gif-wrapper" id="gifWrapper">
+        <!-- BOCADILLO -->
+        <div class="bocadillo" id="bocadillo"></div>
+        <!-- GIF — reemplaza "clippy.gif" por tu gif -->
+        <div class="gif-box" id="clippy.gif">
+          <img src="clippy.gif" alt="gif">
+          <!-- <img src="clippy.gif" alt="gif"> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SECTION -->
+  <div class="bottom-section">
+    <div class="countdown-label">CUENTA ATRÁS</div>
+
+    <div class="countdown-digits" id="countdownDigits">
+      <div class="cd-unit">
+        <div class="cd-number" id="cdDias">--</div>
+        <div class="cd-label">días</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdHoras">--</div>
+        <div class="cd-label">horas</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdMinutos">--</div>
+        <div class="cd-label">min</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdSegundos">--</div>
+        <div class="cd-label">seg</div>
+      </div>
+    </div>
+
+    <div class="available-msg" id="availableMsg">YA DISPONIBLE EN SPOTIFY</div>
+
+    <div class="year-line">21 · 06 · 2026</div>
+  </div>
+
+<script>
+  // ── BOCADILLO ──
+  const textos = [
+    "¿Sabías que Yagcson en verdad es de raza gitana? Vaya payada de comentario.",
+    "No es por faltar ni nada, pero, ¿no tienes nada mejor que hacer?",
+    "Mataría por comer ahora mismo un cerdo al ajillo."
+  ];
+  let textoIdx = 0;
+  let bocadilloTimeout = null;
+
+  const gifWrapper = document.getElementById('gifWrapper');
+  const bocadillo  = document.getElementById('bocadillo');
+
+  gifWrapper.addEventListener('click', () => {
+    bocadillo.textContent = textos[textoIdx % textos.length];
+    textoIdx++;
+    bocadillo.classList.remove('visible');
+    // force reflow para reiniciar animación
+    void bocadillo.offsetWidth;
+    bocadillo.classList.add('visible');
+
+    clearTimeout(bocadilloTimeout);
+    bocadilloTimeout = setTimeout(() => bocadillo.classList.remove('visible'), 4000);
+  });
+
+  // ── CUENTA ATRÁS ──
+  const target = new Date('2026-06-21T00:00:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateCountdown() {
+    const now  = new Date();
+    const diff = target - now;
+
+    if (diff <= 0) {
+      document.getElementById('countdownDigits').style.display = 'none';
+      document.getElementById('availableMsg').style.display    = 'block';
+      return;
+    }
+
+    const dias    = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const horas   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const segs    = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('cdDias').textContent    = pad(dias);
+    document.getElementById('cdHoras').textContent   = pad(horas);
+    document.getElementById('cdMinutos').textContent = pad(minutos);
+    document.getElementById('cdSegundos').textContent= pad(segs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
