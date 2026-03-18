@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SUMMER BIG 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --dark: #181818;
+      --white: #f0ece3;
+      --yellow: #f5c518;
+      --red: #c0392b;
+      --gray: #888;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TOP SECTION ── */
+    .top-section {
+      background-color: var(--white);
+      padding: 48px 40px 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 32px;
+      position: relative;
+    }
+
+    .album-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .album-photo {
+      width: 290px;
+      height: 220px;
+      background: var(--black);
+      border: 3px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .album-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .album-photo .placeholder-text {
+      color: var(--gray);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    .album-title {
+      margin-top: 14px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 6vw, 62px);
+      letter-spacing: 4px;
+      color: var(--black);
+      text-align: center;
+      line-height: 1;
+    }
+
+    /* GIF zone */
+    .gif-zone {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+    }
+
+    .gif-wrapper {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .gif-box {
+      width: 100px;
+      height: 100px;
+      background: var(--black);
+      border: 3px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+
+    .gif-box:hover { transform: scale(1.04); }
+
+    .gif-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gif-box .placeholder-gif {
+      color: var(--gray);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+
+    /* Bocadillo */
+    .bocadillo {
+      display: none;
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 14px);
+      transform: translateY(-50%);
+      background: var(--yellow);
+      color: var(--black);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 12px 16px;
+      border-radius: 10px 10px 10px 0;
+      width: 240px;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow: visible;
+      text-align: left;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+      z-index: 100;
+    }
+
+    .bocadillo::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      border: 8px solid transparent;
+      border-left-color: var(--yellow);
+    }
+
+    .bocadillo.visible {
+      display: block;
+      animation: popIn 0.2s cubic-bezier(.36,1.56,.64,1) both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7) translateY(6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ── MUSIC BOX ── */
+    .music-zone {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Notas flotantes */
+    .notas-container {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 100px;
+      pointer-events: none;
+    }
+
+    .nota {
+      position: absolute;
+      font-size: 22px;
+      opacity: 0;
+      animation: none;
+    }
+
+    .nota.playing {
+      animation: flotarNota 2s ease-in-out infinite;
+    }
+
+    .nota:nth-child(1) { left: 10px;  animation-delay: 0s;    }
+    .nota:nth-child(2) { left: 40px;  animation-delay: 0.5s;  }
+    .nota:nth-child(3) { left: 20px;  animation-delay: 1s;    }
+    .nota:nth-child(4) { left: 50px;  animation-delay: 1.5s;  }
+
+    @keyframes flotarNota {
+      0%   { opacity: 0;   transform: translateY(0)   scale(0.8); }
+      20%  { opacity: 1;   transform: translateY(-20px) scale(1); }
+      80%  { opacity: 0.8; transform: translateY(-70px) scale(1); }
+      100% { opacity: 0;   transform: translateY(-100px) scale(0.6); }
+    }
+
+    /* Caja de música botón */
+    .music-btn {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .music-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+      transition: filter 0.3s;
+    }
+
+    .music-btn:hover img {
+      filter: drop-shadow(0 4px 20px rgba(245,197,24,0.6));
+    }
+
+    .music-btn.playing img {
+      filter: drop-shadow(0 0 16px rgba(245,197,24,0.9));
+    }
+
+    /* Animación rebote al clicar */
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      25%  { transform: scale(0.85) rotate(-6deg); }
+      50%  { transform: scale(1.2) rotate(4deg); }
+      75%  { transform: scale(0.95) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .music-btn.bounce {
+      animation: bounce 0.45s cubic-bezier(.36,1.56,.64,1) both;
+    }
+
+    /* Indicador de canción */
+    .music-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      text-align: center;
+      margin-top: 6px;
+      transition: color 0.3s;
+      text-transform: uppercase;
+    }
+
+    .music-label.playing {
+      color: var(--yellow);
+    }
+
+    /* ── BOTTOM SECTION ── */
+    .bottom-section {
+      background-color: var(--dark);
+      padding: 60px 40px 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .countdown-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 8vw, 80px);
+      letter-spacing: 8px;
+      color: var(--white);
+      text-align: center;
+    }
+
+    .countdown-digits {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cd-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 10vw, 110px);
+      color: var(--white);
+      line-height: 1;
+      min-width: 2ch;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .cd-sep {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 10vw, 110px);
+      color: var(--gray);
+      line-height: 1;
+      align-self: flex-start;
+      margin-top: -4px;
+    }
+
+    .cd-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+
+    .year-line {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      letter-spacing: 6px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    .available-msg {
+      display: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 6vw, 64px);
+      letter-spacing: 6px;
+      color: #1DB954;
+      text-align: center;
+      animation: glow 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #1DB954; }
+      to   { text-shadow: 0 0 40px #1DB954, 0 0 60px #1DB954; }
+    }
+
+    @media (max-width: 560px) {
+      .gif-zone { position: static; margin-top: 20px; }
+      .top-section { flex-direction: column; align-items: center; padding: 36px 20px 24px; }
+      .album-photo { width: 260px; height: 200px; }
+      .music-zone { bottom: 16px; right: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP SECTION -->
+  <div class="top-section">
+    <div class="album-block">
+      <div class="album-photo" id="albumPhoto">
+        <img src="portada.jpeg" alt="Portada álbum">
+      </div>
+      <div class="album-title">SUMMER BIG 2026</div>
+    </div>
+
+    <!-- GIF + BOCADILLO -->
+    <div class="gif-zone">
+      <div class="gif-wrapper" id="gifWrapper">
+        <div class="bocadillo" id="bocadillo"></div>
+        <div class="gif-box" id="gifBox">
+          <img src="clippy.gif" alt="gif">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SECTION -->
+  <div class="bottom-section">
+    <div class="countdown-label">CUENTA ATRÁS</div>
+
+    <div class="countdown-digits" id="countdownDigits">
+      <div class="cd-unit">
+        <div class="cd-number" id="cdDias">--</div>
+        <div class="cd-label">días</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdHoras">--</div>
+        <div class="cd-label">horas</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdMinutos">--</div>
+        <div class="cd-label">min</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-number" id="cdSegundos">--</div>
+        <div class="cd-label">seg</div>
+      </div>
+    </div>
+
+    <div class="available-msg" id="availableMsg">YA DISPONIBLE EN SPOTIFY</div>
+    <div class="year-line">21 · 06 · 2026</div>
+  </div>
+
+  <!-- CAJA DE MÚSICA (fija abajo a la derecha) -->
+  <div class="music-zone" id="musicZone">
+    <div class="notas-container" id="notasContainer">
+      <span class="nota">♪</span>
+      <span class="nota">♫</span>
+      <span class="nota">♩</span>
+      <span class="nota">♬</span>
+    </div>
+    <div class="music-btn" id="musicBtn">
+      <img src="caja.png" alt="Caja de música">
+    </div>
+    <div class="music-label" id="musicLabel">música</div>
+  </div>
+
+<script>
+  // ── BOCADILLO ──
+  const textos = [
+    "¿Sabías que Yagcson en verdad es de raza gitana? Vaya payada de comentario.",
+    "No es por faltar ni nada, pero, ¿no tienes nada mejor que hacer?",
+    "Mataría por comer ahora mismo un cerdo al ajillo."
+  ];
+  let textoIdx = 0;
+  let bocadilloTimeout = null;
+
+  const gifWrapper = document.getElementById('gifWrapper');
+  const bocadillo  = document.getElementById('bocadillo');
+
+  gifWrapper.addEventListener('click', () => {
+    bocadillo.textContent = textos[textoIdx % textos.length];
+    textoIdx++;
+    bocadillo.classList.remove('visible');
+    void bocadillo.offsetWidth;
+    bocadillo.classList.add('visible');
+    clearTimeout(bocadilloTimeout);
+    bocadilloTimeout = setTimeout(() => bocadillo.classList.remove('visible'), 4000);
+  });
+
+  // ── CUENTA ATRÁS ──
+  const target = new Date('2026-06-21T00:00:00');
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateCountdown() {
+    const diff = target - new Date();
+    if (diff <= 0) {
+      document.getElementById('countdownDigits').style.display = 'none';
+      document.getElementById('availableMsg').style.display    = 'block';
+      return;
+    }
+    document.getElementById('cdDias').textContent     = pad(Math.floor(diff / 86400000));
+    document.getElementById('cdHoras').textContent    = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('cdMinutos').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('cdSegundos').textContent = pad(Math.floor((diff % 60000) / 1000));
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ── CAJA DE MÚSICA ──
+  const canciones = ['musica1.mp3', 'musica2.mp3', 'musica3.mp3'];
+  const labels    = ['canción 1', 'canción 2', 'canción 3'];
+  let cancionIdx  = 0;   // próxima canción a reproducir
+  let playing     = false;
+  let audio       = null;
+
+  const musicBtn   = document.getElementById('musicBtn');
+  const musicLabel = document.getElementById('musicLabel');
+  const notas      = document.querySelectorAll('.nota');
+
+  function setNotas(on) {
+    notas.forEach(n => {
+      if (on) n.classList.add('playing');
+      else    n.classList.remove('playing');
+    });
+  }
+
+  function doBounce() {
+    musicBtn.classList.remove('bounce');
+    void musicBtn.offsetWidth; // reflow
+    musicBtn.classList.add('bounce');
+    musicBtn.addEventListener('animationend', () => musicBtn.classList.remove('bounce'), { once: true });
+  }
+
+  musicBtn.addEventListener('click', () => {
+    doBounce();
+
+    if (playing) {
+      // --- PARAR ---
+      audio.pause();
+      audio.currentTime = 0;
+      playing = false;
+      musicBtn.classList.remove('playing');
+      musicLabel.classList.remove('playing');
+      musicLabel.textContent = 'música';
+      setNotas(false);
+    } else {
+      // --- REPRODUCIR siguiente canción ---
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+      audio = new Audio(canciones[cancionIdx % canciones.length]);
+      audio.loop = false;
+      audio.volume = 0.8;
+
+      musicLabel.textContent = labels[cancionIdx % labels.length];
+      cancionIdx++;
+
+      audio.play().then(() => {
+        playing = true;
+        musicBtn.classList.add('playing');
+        musicLabel.classList.add('playing');
+        setNotas(true);
+      }).catch(() => {
+        musicLabel.textContent = 'música';
+      });
+
+      // Al terminar la canción, resetear estado
+      audio.addEventListener('ended', () => {
+        playing = false;
+        musicBtn.classList.remove('playing');
+        musicLabel.classList.remove('playing');
+        musicLabel.textContent = 'música';
+        setNotas(false);
+      });
+    }
+  });
+</script>
+</body>
+</html>
