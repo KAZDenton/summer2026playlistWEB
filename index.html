@@ -45,13 +45,14 @@
     .album-photo {
       width: 290px;
       height: 220px;
-      background: var(--black);
+      background: transparent;
       border: 3px solid var(--black);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       position: relative;
+      cursor: pointer;
     }
 
     .album-photo img {
@@ -59,6 +60,11 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      transition: transform 0.2s ease;
+    }
+
+    .album-photo:hover img {
+      transform: scale(1.03);
     }
 
     .album-photo .placeholder-text {
@@ -66,6 +72,45 @@
       font-family: 'Bebas Neue', sans-serif;
       font-size: 22px;
       letter-spacing: 2px;
+    }
+
+    /* ── TOAST SPOTIFY ── */
+    .spotify-toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      background: rgba(10, 10, 10, 0.82);
+      border: 2px solid #a8ff5a;
+      border-radius: 14px;
+      padding: 14px 22px;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 50;
+      backdrop-filter: blur(6px);
+      white-space: nowrap;
+    }
+
+    .spotify-toast span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #a8ff5a;
+      text-shadow: 0 0 12px #a8ff5a, 0 0 28px #6dff00;
+      display: block;
+    }
+
+    .spotify-toast.show {
+      animation: toastAnim 2.4s ease forwards;
+    }
+
+    @keyframes toastAnim {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      25%  { transform: translate(-50%, -50%) scale(1); }
+      70%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
     }
 
     .album-title {
@@ -94,8 +139,8 @@
     .gif-box {
       width: 100px;
       height: 100px;
-      background: var(--black);
-      border: 3px solid var(--black);
+      background: white;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -174,7 +219,6 @@
       gap: 0;
     }
 
-    /* Notas flotantes */
     .notas-container {
       position: absolute;
       bottom: 110px;
@@ -208,7 +252,6 @@
       100% { opacity: 0;   transform: translateY(-100px) scale(0.6); }
     }
 
-    /* Caja de música botón */
     .music-btn {
       width: 80px;
       height: 80px;
@@ -235,7 +278,6 @@
       filter: drop-shadow(0 0 16px rgba(245,197,24,0.9));
     }
 
-    /* Animación rebote al clicar */
     @keyframes bounce {
       0%   { transform: scale(1); }
       25%  { transform: scale(0.85) rotate(-6deg); }
@@ -248,7 +290,6 @@
       animation: bounce 0.45s cubic-bezier(.36,1.56,.64,1) both;
     }
 
-    /* Indicador de canción */
     .music-label {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 11px;
@@ -361,6 +402,9 @@
     <div class="album-block">
       <div class="album-photo" id="albumPhoto">
         <img src="portada.jpeg" alt="Portada álbum">
+        <div class="spotify-toast" id="spotifyToast">
+          <span>¡Aún no disponible en SPOTIFY!</span>
+        </div>
       </div>
       <div class="album-title">SUMMER BIG 2026</div>
     </div>
@@ -406,7 +450,7 @@
     <div class="year-line">21 · 06 · 2026</div>
   </div>
 
-  <!-- CAJA DE MÚSICA (fija abajo a la derecha) -->
+  <!-- CAJA DE MÚSICA -->
   <div class="music-zone" id="musicZone">
     <div class="notas-container" id="notasContainer">
       <span class="nota">♪</span>
@@ -421,6 +465,19 @@
   </div>
 
 <script>
+  // ── TOAST SPOTIFY ──
+  const albumPhoto   = document.getElementById('albumPhoto');
+  const spotifyToast = document.getElementById('spotifyToast');
+  let toastTimeout   = null;
+
+  albumPhoto.addEventListener('click', () => {
+    spotifyToast.classList.remove('show');
+    void spotifyToast.offsetWidth;
+    spotifyToast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => spotifyToast.classList.remove('show'), 2400);
+  });
+
   // ── BOCADILLO ──
   const textos = [
     "¿Sabías que Yagcson en verdad es de raza gitana? Vaya payada de comentario.",
@@ -465,7 +522,7 @@
   // ── CAJA DE MÚSICA ──
   const canciones = ['musica1.mp3', 'musica2.mp3', 'musica3.mp3'];
   const labels    = ['canción 1', 'canción 2', 'canción 3'];
-  let cancionIdx  = 0;   // próxima canción a reproducir
+  let cancionIdx  = 0;
   let playing     = false;
   let audio       = null;
 
@@ -482,16 +539,14 @@
 
   function doBounce() {
     musicBtn.classList.remove('bounce');
-    void musicBtn.offsetWidth; // reflow
+    void musicBtn.offsetWidth;
     musicBtn.classList.add('bounce');
     musicBtn.addEventListener('animationend', () => musicBtn.classList.remove('bounce'), { once: true });
   }
 
   musicBtn.addEventListener('click', () => {
     doBounce();
-
     if (playing) {
-      // --- PARAR ---
       audio.pause();
       audio.currentTime = 0;
       playing = false;
@@ -500,15 +555,12 @@
       musicLabel.textContent = 'música';
       setNotas(false);
     } else {
-      // --- REPRODUCIR siguiente canción ---
       if (audio) { audio.pause(); audio.currentTime = 0; }
       audio = new Audio(canciones[cancionIdx % canciones.length]);
       audio.loop = false;
       audio.volume = 0.8;
-
       musicLabel.textContent = labels[cancionIdx % labels.length];
       cancionIdx++;
-
       audio.play().then(() => {
         playing = true;
         musicBtn.classList.add('playing');
@@ -517,8 +569,6 @@
       }).catch(() => {
         musicLabel.textContent = 'música';
       });
-
-      // Al terminar la canción, resetear estado
       audio.addEventListener('ended', () => {
         playing = false;
         musicBtn.classList.remove('playing');
